@@ -1,0 +1,24 @@
+{
+  "name": "demo_bodypix_npm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "main": "babel-node src/main.js --plugins @babel/plugin-transform-modules-commonjs"
+  },
+  "keywords": [],
+  "author": "Honghe",
+  "license": "ISC",
+  "dependencies": {
+    "@tensorflow-models/body-pix": "^2.0.4",
+    "@tensorflow/tfjs-converter": "^1.5.1",
+    "@tensorflow/tfjs-core": "^1.5.1",
+    "@tensorflow/tfjs-node": "^1.5.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.7",
+    "@babel/node": "^7.7.7",
+    "@babel/plugin-transform-modules-commonjs": "^7.7.5"
+  }
+}
