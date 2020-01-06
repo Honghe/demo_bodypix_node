@@ -26,11 +26,14 @@ async function main() {
      *   - net.segmentMultiPersonParts
      * See documentation below for details on each method.
      */
-    const personSegmentation = await net.segmentPerson(image, {
-        internalResolution: "full",
-        segmentationThreshold: 0.5
+    const personSegmentation = await net.segmentPersonParts(image, {
     });
-    console.log(personSegmentation)
+    console.log(personSegmentation);
+    const dir = 'output';
+    if (!fs.existsSync(dir)){
+        await fs.mkdirSync(dir);
+    }
+    await fs.promises.writeFile(dir + '/segs.json', JSON.stringify(personSegmentation));
 }
 
 main();
