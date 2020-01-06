@@ -2,6 +2,7 @@
 const tfjs = require('@tensorflow/tfjs-node');
 const bodyPix = require('@tensorflow-models/body-pix');
 const fs = require('fs');
+const path = require('path');
 
 async function loadImage(path) {
     const file = await fs.promises.readFile(path);
@@ -9,8 +10,8 @@ async function loadImage(path) {
     return image;
 }
 
-async function main() {
-    const image = await loadImage('./images/kids.jpg');
+async function main(imagePath, outputDir) {
+    const image = await loadImage(imagePath);
     const net = await bodyPix.load({
         architecture: "ResNet50",
         quantBytes: 1,
@@ -26,14 +27,14 @@ async function main() {
      *   - net.segmentMultiPersonParts
      * See documentation below for details on each method.
      */
-    const personSegmentation = await net.segmentPersonParts(image, {
-    });
+    const personSegmentation = await net.segmentPersonParts(image, {});
     console.log(personSegmentation);
-    const dir = 'output';
-    if (!fs.existsSync(dir)){
-        await fs.mkdirSync(dir);
+    if (!fs.existsSync(outputDir)) {
+        await fs.mkdirSync(outputDir);
     }
-    await fs.promises.writeFile(dir + '/segs.json', JSON.stringify(personSegmentation));
+    const imgBasename = path.basename(imagePath, '.jpg')
+    const jsonName = imgBasename + '.json'
+    await fs.promises.writeFile(outputDir + '/' + jsonName, JSON.stringify(personSegmentation));
 }
 
-main();
+main('./images/kids.jpg', 'output');
