@@ -32,8 +32,8 @@ async function main(net, imagePath, outputDir) {
      *   - net.segmentMultiPersonParts
      * See documentation below for details on each method.
      */
-    const personSegmentation = await net.segmentPersonParts(image, {});
-    console.log(personSegmentation);
+    const personSegmentation = await net.segmentPerson(image, {});
+    // console.log(personSegmentation);
     if (!fs.existsSync(outputDir)) {
         await fs.mkdirSync(outputDir);
     }
@@ -42,15 +42,18 @@ async function main(net, imagePath, outputDir) {
     await fs.promises.writeFile(outputDir + '/' + jsonName, JSON.stringify(personSegmentation));
 }
 
-async function walkDir(basePath, outputDir) {
+async function walkDir(rootPath) {
+    const jpgDir = path.join(rootPath, 'jpgs');
+    const outputJsonDir = path.join(rootPath, 'jsons');
     const net = await loadMode();
-    const dirlist = fs.readdirSync(basePath);
-    dirlist.forEach(function (dirname) {
-        const new_path = basePath + "/" + dirname;
-        main(net, new_path, outputDir);
-    });
+    const dirlist = fs.readdirSync(jpgDir);
+    for (const jpgName of dirlist) {
+        console.log("process file: " + jpgName)
+        const jpg_path = jpgDir + "/" + jpgName;
+        await main(net, jpg_path, outputJsonDir);
+    }
 }
 
-walkDir('demo_bodypix/jpg', 'demo_bodypix/output');
+walkDir('/home/jack/Downloads/demo_bodypix/demo');
 
 // main('./images/kids.jpg', 'output');
