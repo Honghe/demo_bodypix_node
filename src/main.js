@@ -4,20 +4,25 @@ const bodyPix = require('@tensorflow-models/body-pix');
 const fs = require('fs');
 const path = require('path');
 
-async function loadImage(path) {
-    const file = await fs.promises.readFile(path);
-    const image = await tfjs.node.decodeImage(file, 3);
-    return image;
-}
-
-async function main(imagePath, outputDir) {
-    const image = await loadImage(imagePath);
+async function loadMode() {
     const net = await bodyPix.load({
         architecture: "ResNet50",
         quantBytes: 1,
         outputStride: 16,
         modelUrl: "http://0.0.0.0:8000/ResNet50/model-stride16.json"
     });
+    return net;
+}
+
+
+async function loadImage(path) {
+    const file = await fs.promises.readFile(path);
+    const image = await tfjs.node.decodeImage(file, 3);
+    return image;
+}
+
+async function main(net, imagePath, outputDir) {
+    const image = await loadImage(imagePath);
 
     /**
      * One of:
@@ -37,4 +42,15 @@ async function main(imagePath, outputDir) {
     await fs.promises.writeFile(outputDir + '/' + jsonName, JSON.stringify(personSegmentation));
 }
 
-main('./images/kids.jpg', 'output');
+async function walkDir(basePath, outputDir) {
+    const net = await loadMode();
+    const dirlist = fs.readdirSync(basePath);
+    dirlist.forEach(function (dirname) {
+        const new_path = basePath + "/" + dirname;
+        main(net, new_path, outputDir);
+    });
+}
+
+walkDir('demo_bodypix/jpg', 'demo_bodypix/output');
+
+// main('./images/kids.jpg', 'output');
