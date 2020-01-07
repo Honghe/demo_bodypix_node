@@ -54,6 +54,11 @@ async function walkDir(rootPath) {
     }
 }
 
-walkDir('/home/jack/Downloads/demo_bodypix/demo');
+if (process.argv.length <= 2) {
+    console.error(`Need run with: ${path.basename(process.argv[1])} <dir>`)
+} else {
+    root_dir = path.resolve(process.argv[2])
+    walkDir(root_dir)
+}
 
 // main('./images/kids.jpg', 'output');

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import json
+import logging
 import os
+import sys
 
 import cv2
 import numpy as np
@@ -72,8 +74,11 @@ def walk_dir_for_segmentation(root_dir):
 
 if __name__ == '__main__':
     # for dir
-    root_dir = '/home/jack/Downloads/demo_bodypix/demo'
-    walk_dir_for_segmentation(root_dir)
+    if len(sys.argv) <= 1:
+        logging.error('Need run with: {} <dir>'.format(os.path.basename(sys.argv[0])))
+    else:
+        root_dir = os.path.abspath(sys.argv[1])
+        walk_dir_for_segmentation(root_dir)
 
     # for one jpg
     # img_path = '../images/kids.jpg'
