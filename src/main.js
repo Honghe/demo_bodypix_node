@@ -32,7 +32,7 @@ async function main(net, imagePath, outputDir) {
      *   - net.segmentMultiPersonParts
      * See documentation below for details on each method.
      */
-    const personSegmentation = await net.segmentPerson(image, {});
+    const personSegmentation = await net.segmentPersonParts(image, {});
     // console.log(personSegmentation);
     if (!fs.existsSync(outputDir)) {
         await fs.mkdirSync(outputDir);
