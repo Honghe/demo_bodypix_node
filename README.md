@@ -7,7 +7,7 @@ Segmented by BodyPix 2.0 and visualized by Python.
 ### Directory tree
 ```
 ├── demo                # `root_dir` 
-│   ├── demo_mask.mp4   # step 4 output
+│   ├── mask.mp4   # step 4 output
 │   ├── demo.mp4        # origin input
 │   ├── jpgs            # step 1 output
 │   ├── jsons           # stpe 2 output
@@ -55,7 +55,7 @@ Or **All in on steps 1-4**
 ```
 python3 all_in_one.py `root_dir`
 ```
-logs:
+logs on CPU:
 ```
 python3 all_in_one.py /demo_bodypix/demo1
 run: python3 1_mp4_to_jpgs.py /demo_bodypix/demo1
@@ -67,3 +67,6 @@ Elapsed time: 123.97
 run: python3 4_jpgs_to_mp4.py /demo_bodypix/demo1
 Elapsed time: 1.19
 ```
+
+## 坑
+- tfjs-node与node.js配合就是个坑，比如:https://github.com/tensorflow/tfjs/issues/2003

@@ -6,7 +6,7 @@ import sys
 
 
 def main(root_dir):
-    mp4_file = os.path.join(root_dir, 'huangjie3_masked.mp4')
+    mp4_file = os.path.join(root_dir, 'masked.mp4')
     jpgs_dir = os.path.join(root_dir, 'masked_jpgs')
     os.makedirs(jpgs_dir, exist_ok=True)
     args = ['ffmpeg', '-y', '-i', '{}/%4d.jpg'.format(jpgs_dir), '-vcodec', 'libx264', mp4_file]
