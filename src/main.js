@@ -1,5 +1,6 @@
-// 使用@tensorflow/tfjs-node加速，同时有GPU版本
-const tfjs = require('@tensorflow/tfjs-node');
+// 使用@tensorflow/tfjs-node加速，同时有GPU版本@tensorflow/tfjs-node-gpu
+// 可以只使用@tensorflow/tfjs-node-gpu，当没有GPU时会自动回退使用CPU
+const tfjs = require('@tensorflow/tfjs-node-gpu');
 const bodyPix = require('@tensorflow-models/body-pix');
 const fs = require('fs');
 const path = require('path');
@@ -9,7 +10,7 @@ async function loadMode() {
         architecture: "ResNet50",
         quantBytes: 1,
         outputStride: 16,
-        modelUrl: "http://0.0.0.0:8000/ResNet50/model-stride16.json"
+        modelUrl: "http://172.20.121.19:8000/ResNet50/model-stride16.json"
     });
     return net;
 }
@@ -17,13 +18,14 @@ async function loadMode() {
 
 async function loadImage(path) {
     const file = await fs.promises.readFile(path);
+    console.log('decoding ' + path)
     const image = await tfjs.node.decodeImage(file, 3);
+    console.log('decoded')
     return image;
 }
 
 async function main(net, imagePath, outputDir) {
     const image = await loadImage(imagePath);
-
     /**
      * One of:
      *   - net.segmentPerson
@@ -33,7 +35,6 @@ async function main(net, imagePath, outputDir) {
      * See documentation below for details on each method.
      */
     const personSegmentation = await net.segmentPersonParts(image, {});
-    // console.log(personSegmentation);
     if (!fs.existsSync(outputDir)) {
         await fs.mkdirSync(outputDir);
     }
@@ -48,8 +49,8 @@ async function walkDir(rootPath) {
     const net = await loadMode();
     const dirlist = fs.readdirSync(jpgDir);
     for (const jpgName of dirlist) {
-        console.log("process file: " + jpgName)
-        const jpg_path = jpgDir + "/" + jpgName;
+        console.log("process file: " + jpgName);
+        const jpg_path = path.join(jpgDir, jpgName);
         await main(net, jpg_path, outputJsonDir);
     }
 }
