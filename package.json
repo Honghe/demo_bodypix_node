@@ -10,9 +10,9 @@
   "author": "Honghe",
   "license": "ISC",
   "dependencies": {
-    "@tensorflow-models/body-pix": "^2.0.4",
-    "@tensorflow/tfjs-converter": "^1.5.1",
-    "@tensorflow/tfjs-core": "^1.5.1",
-    "@tensorflow/tfjs-node": "^1.5.1"
+    "@tensorflow-models/body-pix": "~2.0.4",
+    "@tensorflow/tfjs-node-gpu": "~1.5.1",
+    "@tensorflow/tfjs-converter": "~1.5.1",
+    "@tensorflow/tfjs-core": "~1.5.1"
   }
 }
