@@ -4,6 +4,7 @@ const tfjs = require('@tensorflow/tfjs-node-gpu');
 const bodyPix = require('@tensorflow-models/body-pix');
 const fs = require('fs');
 const path = require('path');
+var jpeg = require('jpeg-js');
 
 async function loadMode() {
     const net = await bodyPix.load({
@@ -15,8 +16,29 @@ async function loadMode() {
     return net;
 }
 
+async function loadImageManual(path) {
+    console.log('loadImageManual decoding ' + path)
+    const jpegData = fs.readFileSync(path);
+    const pixels = jpeg.decode(jpegData, true);
 
-async function loadImage(path) {
+    const numChannels = 3;
+    const numPixels = pixels.width * pixels.height;
+    const values = new Int32Array(numPixels * numChannels);
+
+    for (let i = 0; i < numPixels; i++) {
+        for (let channel = 0; channel < numChannels; ++channel) {
+            values[i * numChannels + channel] = pixels[i * 4 + channel];
+        }
+    }
+
+    // fill pixels with pixel channel bytes from image
+    const outShape = [pixels.height, pixels.width, numChannels];
+    const input = tfjs.tensor3d(values, outShape, 'int32');
+    console.log('loadImageManual decoded')
+    return input;
+}
+
+async function loadImageManual(path) {
     const file = await fs.promises.readFile(path);
     console.log('decoding ' + path)
     const image = await tfjs.node.decodeImage(file, 3);
@@ -34,7 +56,9 @@ async function main(net, imagePath, outputDir) {
      *   - net.segmentMultiPersonParts
      * See documentation below for details on each method.
      */
-    const personSegmentation = await net.segmentPersonParts(image, {});
+    console.log('personSegmentation')
+    const personSegmentation = await net.segmentPersonParts(image);
+    console.log('personSegmentation done')
     if (!fs.existsSync(outputDir)) {
         await fs.mkdirSync(outputDir);
     }
@@ -62,4 +86,5 @@ if (process.argv.length <= 2) {
     walkDir(root_dir)
 }
 
-// main('./images/kids.jpg', 'output');
+// const net = loadMode();
+// main(net, '../images/kids.jpg', '../output');
