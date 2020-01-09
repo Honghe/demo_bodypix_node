@@ -3,6 +3,8 @@ import json
 import logging
 import os
 import sys
+from functools import partial
+from multiprocessing import Pool
 
 import cv2
 import numpy as np
@@ -54,22 +56,29 @@ def drawMask(img, coloredPartImage, opacity):
 
 
 def walk_dir_for_segmentation(root_dir):
+    print('walk_dir_for_segmentation {}'.format(root_dir))
     img_dir = os.path.join(root_dir, 'jpgs')
     json_dir = os.path.join(root_dir, 'jsons')
     masked_jpgs_dir = os.path.join(root_dir, 'masked_jpgs')
-    for img_file in os.listdir(img_dir):
-        print('preprocess file: {}'.format(img_file))
-        img_path = os.path.join(img_dir, img_file)
-        img = load_image(img_path)
-        json_path = os.path.join(json_dir, img_file.split('.')[0] + '.json')
-        partSegmentation = load_partSegmentation(json_path)
-        coloredPartImage = toColoredPartMask(partSegmentation, img=img)
-        mask_img = drawMask(img, coloredPartImage, opacity)
-        # save image
-        img_basename = os.path.basename(img_path)
-        output_img_path = os.path.join(masked_jpgs_dir, img_basename)
-        os.makedirs(masked_jpgs_dir, exist_ok=True)
-        cv2.imwrite(output_img_path, mask_img[:, :, ::-1])
+    p = Pool()
+    p.map(partial(visualize_masked_image, img_dir=img_dir, json_dir=json_dir, masked_jpgs_dir=masked_jpgs_dir),
+          sorted(os.listdir(img_dir)))
+
+
+def visualize_masked_image(img_file, img_dir, json_dir, masked_jpgs_dir):
+    print('preprocess file: {}'.format(img_file))
+    img_path = os.path.join(img_dir, img_file)
+    img = load_image(img_path)
+    json_path = os.path.join(json_dir, img_file.split('.')[0] + '.json')
+    partSegmentation = load_partSegmentation(json_path)
+    coloredPartImage = toColoredPartMask(partSegmentation, img=img)
+    mask_img = drawMask(img, coloredPartImage, opacity)
+    # save image
+    img_basename = os.path.basename(img_path)
+    output_img_path = os.path.join(masked_jpgs_dir, img_basename)
+    os.makedirs(masked_jpgs_dir, exist_ok=True)
+    cv2.imwrite(output_img_path, mask_img[:, :, ::-1])
+    return img, coloredPartImage, mask_img
 
 
 if __name__ == '__main__':
@@ -81,14 +90,15 @@ if __name__ == '__main__':
         walk_dir_for_segmentation(root_dir)
 
     # for one jpg
-    # img_path = '../images/kids.jpg'
-    # json_path = '../output/kids.json'
-    # output_dir = '../masked_jpg'
-    # img = load_image(img_path)
-    # partSegmentation = load_partSegmentation(json_path)
-    # coloredPartImage = toColoredPartMask(partSegmentation, img=img)
-    # mask_img = drawMask(img, coloredPartImage, opacity)
+    # img_dir = '../jpgs/'
+    # json_dir = '../output/'
+    # masked_jpgs_dir = '../masked_jpg'
+    # img_file = 'kids.jpg'
+    # visualize_one_masked_image = partial(visualize_masked_image, img_dir=img_dir, json_dir=json_dir,
+    #                                      masked_jpgs_dir=masked_jpgs_dir)
+    # img, coloredPartImage, mask_img = visualize_one_masked_image(img_file)
     # from matplotlib import pyplot as plt
+    #
     # fig = plt.figure(figsize=(12, 4))
     # images = [img, coloredPartImage, mask_img]
     # rows = 1
