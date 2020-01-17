@@ -38,7 +38,8 @@ async function loadImageManual(path) {
     return input;
 }
 
-async function loadImageManual(path) {
+async function loadImage(path) {
+    // TODO Out of memory when called in loop
     const file = await fs.promises.readFile(path);
     console.log('decoding ' + path)
     const image = await tfjs.node.decodeImage(file, 3);
@@ -47,7 +48,7 @@ async function loadImageManual(path) {
 }
 
 async function main(net, imagePath, outputDir) {
-    const image = await loadImage(imagePath);
+    const image = await loadImageManual(imagePath);
     /**
      * One of:
      *   - net.segmentPerson

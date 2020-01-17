@@ -68,5 +68,15 @@ run: python3 4_jpgs_to_mp4.py /demo_bodypix/demo1
 Elapsed time: 1.19
 ```
 
+## TODO
+- Fix Out of memory when called in loop.
+```javascript
+async function loadImage(path) {
+    const file = await fs.promises.readFile(path);
+    const image = await tfjs.node.decodeImage(file, 3);
+    return image;
+}
+```
+
 ## 坑
 - tfjs-node与node.js配合就是个坑，比如:https://github.com/tensorflow/tfjs/issues/2003
